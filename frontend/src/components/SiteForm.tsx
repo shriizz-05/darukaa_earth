@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
-import { blankToNull } from "../lib/format";
+import { blankToNull, formatAreaSqKm } from "../lib/format";
 import type { Project } from "../types/project";
 import { ErrorMessage } from "./ErrorMessage";
 
@@ -17,6 +17,7 @@ type SiteFormProps = {
   submitting: boolean;
   error: string | null;
   fieldErrors?: Record<string, string>;
+  areaSqKm?: number | null;
   onSubmit: (values: SiteFormValues) => Promise<void>;
   onCancel: () => void;
 };
@@ -24,10 +25,11 @@ type SiteFormProps = {
 export function SiteForm({
   projects,
   defaultProjectId,
-  submitLabel = "Save site",
+  submitLabel = "Save Site",
   submitting,
   error,
   fieldErrors = {},
+  areaSqKm = null,
   onSubmit,
   onCancel,
 }: SiteFormProps) {
@@ -42,6 +44,9 @@ export function SiteForm({
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submitting) {
+      return;
+    }
     setLocalError(null);
     const trimmed = name.trim();
     if (!trimmed) {
@@ -79,8 +84,14 @@ export function SiteForm({
     <form className="auth-form" onSubmit={handleSubmit} noValidate>
       {localError || error ? <ErrorMessage>{localError ?? error}</ErrorMessage> : null}
 
+      {areaSqKm != null ? (
+        <p className="muted" role="status">
+          Approximate area: {formatAreaSqKm(areaSqKm)}
+        </p>
+      ) : null}
+
       <div className="field">
-        <label htmlFor="site-name">Name</label>
+        <label htmlFor="site-name">Site Name</label>
         <input
           id="site-name"
           name="name"

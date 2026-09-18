@@ -4,14 +4,12 @@ import com.darukaa.earth.exception.InvalidRequestException;
 import com.darukaa.earth.exception.ResourceNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Profile("!nodb")
-@ConditionalOnBean(ProjectRepository.class)
 public class ProjectService {
 
     private final ProjectRepository projectRepository;

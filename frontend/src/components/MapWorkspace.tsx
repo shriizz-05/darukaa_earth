@@ -9,7 +9,7 @@ import { MapView } from "./MapView";
 import { Modal } from "./Modal";
 import { SiteDetails } from "./SiteDetails";
 import { SiteForm, type SiteFormValues } from "./SiteForm";
-import { EMPTY_SITE_COLLECTION, siteViewFromFeature } from "../lib/geojson";
+import { EMPTY_SITE_COLLECTION, polygonAreaSqKm, siteViewFromFeature } from "../lib/geojson";
 import type { Project } from "../types/project";
 import type {
   GeoJsonFeatureCollection,
@@ -45,6 +45,7 @@ export default function MapWorkspace({ token }: MapWorkspaceProps) {
   const [selected, setSelected] = useState<SiteView | null>(null);
   const [reloadToken, setReloadToken] = useState(0);
   const autoStarted = useRef(false);
+  const savingRef = useRef(false);
 
   async function refreshSites() {
     const collection = await getAll();
@@ -106,24 +107,38 @@ export default function MapWorkspace({ token }: MapWorkspaceProps) {
 
   const siteCount = sites.features.length;
   const emptyHint = !loading && !error && siteCount === 0 && !drawing;
+  const draftAreaSqKm = useMemo(() => polygonAreaSqKm(draftGeometry), [draftGeometry]);
 
-  const selectedProjectName = useMemo(
-    () => projects.find((project) => project.id === defaultProjectId)?.name,
-    [projects, defaultProjectId],
-  );
-
-  function beginDraw() {
+  function canStartDrawing(): boolean {
     if (projects.length === 0) {
       setError("Create a project before drawing a site.");
-      return;
+      return false;
     }
     setError(null);
     setSelected(null);
     setFormError(null);
     setFieldErrors({});
+    return true;
+  }
+
+  function beginDraw() {
+    if (!canStartDrawing()) {
+      return;
+    }
     setDraftGeometry(null);
     setDrawing(true);
     setDrawSession((value) => value + 1);
+  }
+
+  function handleDrawToolStart() {
+    if (drawing) {
+      return true;
+    }
+    if (!canStartDrawing()) {
+      return false;
+    }
+    setDrawing(true);
+    return true;
   }
 
   function cancelDraw() {
@@ -132,10 +147,20 @@ export default function MapWorkspace({ token }: MapWorkspaceProps) {
     setFormError(null);
     setFieldErrors({});
     setSaving(false);
+    savingRef.current = false;
   }
 
   function handleDrawComplete(geometry: GeoJsonPolygon) {
     setDraftGeometry(geometry);
+    setFormError(null);
+    setFieldErrors({});
+  }
+
+  function handleDrawCleared() {
+    if (savingRef.current) {
+      return;
+    }
+    setDraftGeometry(null);
     setFormError(null);
     setFieldErrors({});
   }
@@ -148,9 +173,10 @@ export default function MapWorkspace({ token }: MapWorkspaceProps) {
   }
 
   async function handleCreate(values: SiteFormValues) {
-    if (!draftGeometry) {
+    if (!draftGeometry || savingRef.current) {
       return;
     }
+    savingRef.current = true;
     setSaving(true);
     setFormError(null);
     setFieldErrors({});
@@ -182,6 +208,7 @@ export default function MapWorkspace({ token }: MapWorkspaceProps) {
         getApiErrorMessage(cause, "Unable to save this site. Check the polygon and try again."),
       );
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
   }
@@ -195,7 +222,7 @@ export default function MapWorkspace({ token }: MapWorkspaceProps) {
         </div>
         <div className="map-toolbar-actions">
           {drawing ? (
-            <button type="button" className="btn-quiet" onClick={cancelDraw}>
+            <button type="button" className="btn-quiet" onClick={cancelDraw} disabled={saving}>
               Cancel drawing
             </button>
           ) : (
@@ -206,10 +233,9 @@ export default function MapWorkspace({ token }: MapWorkspaceProps) {
         </div>
       </div>
 
-      {drawing ? (
+      {drawing && !draftGeometry ? (
         <p className="map-hint" role="status">
-          Click the map to add vertices. Double-click or click the first point to finish the polygon
-          {selectedProjectName ? ` for ${selectedProjectName}` : ""}.
+          Draw a polygon on the map to define the site boundary.
         </p>
       ) : null}
 
@@ -254,26 +280,28 @@ export default function MapWorkspace({ token }: MapWorkspaceProps) {
         sites={sites}
         drawing={drawing}
         drawSession={drawSession}
+        draftLocked={Boolean(draftGeometry)}
         onDrawComplete={handleDrawComplete}
+        onDrawCleared={handleDrawCleared}
+        onDrawToolStart={handleDrawToolStart}
         onSiteClick={handleSiteClick}
         onError={setMapError}
       />
 
-      {selected ? (
+      {selected && !draftGeometry ? (
         <div className="map-details-slot">
           <SiteDetails site={selected} onClose={() => setSelected(null)} />
         </div>
       ) : null}
 
       {draftGeometry ? (
-        <Modal title="Save site" onClose={() => (!saving ? cancelDraw() : undefined)}>
-          <p className="muted">
-            The polygon is ready. Name it and attach it to a project. Spring Boot stores it as MySQL
-            GEOMETRY.
-          </p>
+        <Modal title="Save Site" onClose={() => (!saving ? cancelDraw() : undefined)}>
+          <p className="muted">The polygon is ready. Name it and attach it to a project.</p>
           <SiteForm
             projects={projects}
             defaultProjectId={defaultProjectId}
+            submitLabel="Save Site"
+            areaSqKm={draftAreaSqKm}
             submitting={saving}
             error={formError}
             fieldErrors={fieldErrors}

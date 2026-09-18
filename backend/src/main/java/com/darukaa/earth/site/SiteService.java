@@ -6,14 +6,12 @@ import com.darukaa.earth.project.ProjectRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import org.locationtech.jts.geom.Polygon;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Profile("!nodb")
-@ConditionalOnBean(SiteRepository.class)
 public class SiteService {
 
     private final SiteRepository siteRepository;

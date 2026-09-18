@@ -14,7 +14,7 @@ export function AppLayout() {
   }
 
   return (
-    <div className="app-shell">
+    <div className={mapLayout ? "app-shell app-shell-map" : "app-shell"}>
       <header className="topbar">
         <button
           type="button"

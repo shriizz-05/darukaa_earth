@@ -4,7 +4,6 @@ import com.darukaa.earth.exception.DuplicateEmailException;
 import com.darukaa.earth.user.User;
 import com.darukaa.earth.user.UserRepository;
 import com.darukaa.earth.user.UserRole;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Profile("!nodb")
-@ConditionalOnBean(UserRepository.class)
 public class AuthService {
 
     private final UserRepository userRepository;
