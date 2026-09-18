@@ -68,7 +68,9 @@ _Add PNG/WebP files under `docs/screenshots/` and link them here before a public
 
 | Suggested file | Caption |
 | --- | --- |
-| `docs/screenshots/login.png` | Sign-in at `/login` with the demo admin account |
+| <img width="1908" height="907" alt="image" src="https://github.com/user-attachments/assets/1ae4eda7-224d-4ca4-ad27-2c1ac1019c55" /> <img width="1887" height="884" alt="image" src="https://github.com/user-attachments/assets/447e0259-52be-493d-86af-40d4eea35698" />
+
+ | Sign-in at `/login` with the demo admin account |
 | <img width="1918" height="915" alt="image" src="https://github.com/user-attachments/assets/06f5b5eb-2b40-4d2d-8dcf-e847272afe72" /> <img width="1913" height="907" alt="image" src="https://github.com/user-attachments/assets/4615464d-cf87-419b-9466-582603cb97c8" />
 
  | Dashboard counts and Average Performance  |
@@ -327,22 +329,12 @@ From [`.env.example`](.env.example):
 
 | Variable | Example / default | Purpose |
 | --- | --- | --- |
-| `MYSQL_ROOT_PASSWORD` | `darukaa_root_dev` | MySQL root (local only) |
-| `MYSQL_DATABASE` | `darukaa_earth` | Database name |
-| `MYSQL_USER` / `MYSQL_PASSWORD` | `darukaa` / `darukaa_dev` | App user |
-| `MYSQL_PORT` | `3306` | Published MySQL port |
-| `JWT_SECRET` | `change-me-in-production` | **Set a long random value before sharing** |
-| `JWT_EXPIRATION_MS` | `86400000` | Access token lifetime |
-| `JWT_FAIL_ON_WEAK_SECRET` | `false` | Set `true` to refuse the default secret |
 | `APP_ADMIN_EMAIL` | `admin@darukaa.earth` | Seed admin |
-| `APP_ADMIN_PASSWORD` | `ChangeMe_Admin_123!` | **Change this** |
-| `APP_SEED_DEMO` | `true` | Generated Indian mock projects |
-| `JAVA_OPTS` | empty | e.g. `-Xms256m -Xmx512m` |
-| `FRONTEND_PORT` / `BACKEND_PORT` | `5173` / `8080` | Published ports |
-| `VITE_API_BASE_URL` | `/api` | Compose image only (nginx proxy). Do not use `http://localhost:8080` here |
-| `VITE_MAPBOX_TOKEN` | `your_mapbox_public_token` | Public `pk.` token; **rebuild** the frontend image after changing |
+| `APP_ADMIN_PASSWORD` | `ChangeMe_Admin_123!` | Login Credentials for demo |
+| `APP_SEED_DEMO` | `true` | Indian mock projects |
 
-Compose also passes `APP_ADMIN_SEED`, `APP_ADMIN_NAME`, and `APP_CORS_ALLOWED_ORIGINS` (see `docker-compose.yml`).
+
+Compose also passes `APP_ADMIN_SEED`, `APP_ADMIN_NAME`, and `APP_CORS_ALLOWED_ORIGINS`.
 
 ### `backend/.env.example` (host `mvnw`)
 
@@ -474,7 +466,7 @@ cd C:\Users\USER\DarukaEarth\backend
 ./mvnw test
 ```
 
-Health and geometry unit tests do not need Docker. `MysqlPersistenceTest` uses Testcontainers MySQL 8 and **skips if Docker is not running**. Tests set `app.seed.demo=false` and do not seed the admin user.
+Health and geometry unit tests do not need Docker. `MysqlPersistenceTest` uses Testcontainers MySQL 8 . Tests set `app.seed.demo=false` and do not seed the admin user.
 
 **Frontend** (from `frontend/`):
 
@@ -489,7 +481,7 @@ Vitest (`vitest run`) with jsdom. No Mapbox token is required.
 
 ## Code quality
 
-Git hooks live at the **repo root**. `npm install` there registers Husky; `frontend` `npm install` provides ESLint/Prettier binaries. `pre-commit` runs `npx lint-staged` (eslint --fix + Prettier on staged `frontend/**` JS/TS/TSX; Prettier on CSS/JSON).
+Git hooks live at the darukaa_earth. `npm install` there registers Husky; `frontend` `npm install` provides ESLint/Prettier binaries. `pre-commit` runs `npx lint-staged` (eslint --fix + Prettier on staged `frontend/**` JS/TS/TSX; Prettier on CSS/JSON).
 
 | Command | Where | What |
 | --- | --- | --- |
@@ -499,16 +491,14 @@ Git hooks live at the **repo root**. `npm install` there registers Husky; `front
 | `npm test` | `frontend/` | Vitest |
 | `npm run build` | `frontend/` | `tsc -b && vite build` |
 | `.\mvnw.cmd test` / `./mvnw test` | `backend/` | Unit + integration tests |
-| `.\mvnw.cmd verify` / `./mvnw verify` | `backend/` | Tests + **Spotless check** |
+| `.\mvnw.cmd verify` / `./mvnw verify` | `backend/` | Tests + Checks |
 | `.\mvnw.cmd spotless:apply` | `backend/` | Google Java Format AOSP |
-
-If `verify` fails on style, run `spotless:apply` once, then `verify` again.
 
 ---
 
 ## CI/CD pipeline
 
-Push or open a pull request: [`.github/workflows/ci.yml`](.github/workflows/ci.yml). **Two jobs** run in parallel on `ubuntu-latest`. There is **no deploy job** (no registry credentials in this repository).
+Push or open a pull request: [`.github/workflows/ci.yml`](.github/workflows/ci.yml).Both run in parallel. There is 
 
 | Job | Runs |
 | --- | --- |
