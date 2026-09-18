@@ -1,0 +1,11 @@
+# Railway service config. Deploy from backend/ so this Dockerfile is the build root:
+#   railway up ./backend --path-as-root --service backend -y
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/api/health"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"

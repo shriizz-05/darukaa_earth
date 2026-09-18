@@ -1,0 +1,11 @@
+# Railway frontend service. Deploy from frontend/:
+#   railway up ./frontend --path-as-root --service frontend -y
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+healthcheckPath = "/"
+healthcheckTimeout = 120
+restartPolicyType = "ON_FAILURE"

@@ -293,6 +293,9 @@ export function MapView({
       requestAnimationFrame(() => {
         resizeMap();
       });
+      map.once("idle", () => {
+        resizeMap();
+      });
       map.on("mouseenter", FILL_LAYER, () => {
         map.getCanvas().style.cursor = drawingRef.current ? "crosshair" : "pointer";
       });

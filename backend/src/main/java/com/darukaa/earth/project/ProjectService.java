@@ -3,7 +3,9 @@ package com.darukaa.earth.project;
 import com.darukaa.earth.exception.InvalidRequestException;
 import com.darukaa.earth.exception.ResourceNotFoundException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,10 +31,23 @@ public class ProjectService {
 
     @Transactional(readOnly = true)
     public List<ProjectResponse> list(ProjectStatus status, ProjectType projectType, String name) {
-        return projectRepository
-                .findAll(ProjectSpecifications.withFilters(status, projectType, name))
-                .stream()
-                .map(project -> projectMapper.toResponse(project, countSites(project.getId())))
+        List<Project> projects =
+                projectRepository.findAll(
+                        ProjectSpecifications.withFilters(status, projectType, name));
+        if (projects.isEmpty()) {
+            return List.of();
+        }
+        Map<Long, Long> siteCounts = new HashMap<>();
+        for (ProjectSiteCount row : projectRepository.countSitesGrouped()) {
+            if (row.getProjectId() != null) {
+                siteCounts.put(row.getProjectId(), row.getSiteCount());
+            }
+        }
+        return projects.stream()
+                .map(
+                        project ->
+                                projectMapper.toResponse(
+                                        project, siteCounts.getOrDefault(project.getId(), 0L)))
                 .toList();
     }
 

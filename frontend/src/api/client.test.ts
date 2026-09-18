@@ -25,6 +25,26 @@ describe("apiClient auth interceptor", () => {
     clearToken();
   });
 
+  it("does not attach Authorization on login", async () => {
+    setToken("stale-token");
+
+    const response = await apiClient.post(
+      "/api/auth/login",
+      { email: "admin@darukaa.earth", password: "ChangeMe_Admin_123!" },
+      {
+        adapter: async (config: InternalAxiosRequestConfig): Promise<AxiosResponse> => ({
+          data: {},
+          status: 200,
+          statusText: "OK",
+          headers: {},
+          config,
+        }),
+      },
+    );
+
+    expect(response.config.headers.Authorization).toBeUndefined();
+  });
+
   it("attaches Authorization Bearer from localStorage", async () => {
     setToken("test-token");
 
@@ -70,17 +90,34 @@ describe("apiClient auth interceptor", () => {
 
 describe("resolveApiBaseUrl", () => {
   it("defaults local Vite to the Spring Boot origin", () => {
-    expect(resolveApiBaseUrl(undefined)).toBe("http://localhost:8080");
-    expect(resolveApiBaseUrl("")).toBe("http://localhost:8080");
+    expect(resolveApiBaseUrl(undefined, "")).toBe("http://127.0.0.1:8080");
+    expect(resolveApiBaseUrl("", "")).toBe("http://127.0.0.1:8080");
+  });
+
+  it("forces the local Spring Boot origin on the desktop hostname", () => {
+    expect(resolveApiBaseUrl("/api", "localhost")).toBe("http://127.0.0.1:8080");
+    expect(resolveApiBaseUrl("/api", "127.0.0.1")).toBe("http://127.0.0.1:8080");
+    expect(resolveApiBaseUrl("http://localhost:8080", "localhost")).toBe("http://127.0.0.1:8080");
   });
 
   it("treats /api as same-origin so nginx can proxy without /api/api", () => {
-    expect(resolveApiBaseUrl("/api")).toBe("");
-    expect(resolveApiBaseUrl("/api/")).toBe("");
+    expect(resolveApiBaseUrl("/api", "frontend.up.railway.app")).toBe("");
+    expect(resolveApiBaseUrl("/api/", "frontend.up.railway.app")).toBe("");
+  });
+
+  it("uses same-origin on public hosts even if env points at localhost", () => {
+    expect(
+      resolveApiBaseUrl("http://127.0.0.1:8080", "penny-ages-merely-tiger.trycloudflare.com"),
+    ).toBe("");
+    expect(resolveApiBaseUrl("http://localhost:8080", "localtunnel.me")).toBe("");
+    expect(resolveApiBaseUrl(undefined, "frontend.up.railway.app")).toBe("");
+    expect(resolveApiBaseUrl("", "example.trycloudflare.com")).toBe("");
   });
 
   it("keeps an explicit public API origin", () => {
-    expect(resolveApiBaseUrl("https://api.example.com")).toBe("https://api.example.com");
+    expect(resolveApiBaseUrl("https://api.example.com", "app.example.com")).toBe(
+      "https://api.example.com",
+    );
   });
 });
 

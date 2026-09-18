@@ -1,5 +1,6 @@
 server:
-  port: 8080
+  # Railway/Render/Fly set PORT. Local and Compose keep 8080.
+  port: ${PORT:${SERVER_PORT:8080}}
   # Trust X-Forwarded-* from nginx or a platform proxy (HTTPS termination).
   forward-headers-strategy: framework
 
@@ -7,9 +8,16 @@ spring:
   application:
     name: darukaa-earth
   datasource:
-    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:darukaa_earth}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    username: ${MYSQL_USER:darukaa}
-    password: ${MYSQL_PASSWORD:darukaa_dev}
+    # MYSQLHOST/MYSQLPORT/MYSQLDATABASE/MYSQLUSER/MYSQLPASSWORD are Railway MySQL plugin names.
+    # Local desktop MySQL is 3307 (3306 is a different instance). Railway sets MYSQL_PORT/MYSQLPORT.
+    url: jdbc:mysql://${MYSQL_HOST:${MYSQLHOST:127.0.0.1}}:${MYSQL_PORT:${MYSQLPORT:3307}}/${MYSQL_DATABASE:${MYSQLDATABASE:darukaa_earth}}?sslMode=${MYSQL_SSL_MODE:DISABLED}&allowPublicKeyRetrieval=true&serverTimezone=UTC&connectTimeout=5000&socketTimeout=20000
+    username: ${MYSQL_USER:${MYSQLUSER:darukaa}}
+    password: ${MYSQL_PASSWORD:${MYSQLPASSWORD:darukaa_dev}}
+    hikari:
+      connection-timeout: 5000
+      maximum-pool-size: 20
+      minimum-idle: 5
+      leak-detection-threshold: 20000
   jpa:
     open-in-view: false
     hibernate:
@@ -26,7 +34,8 @@ spring:
 
 app:
   cors:
-    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173}
+    # Comma-separated origins or patterns (https://*.vercel.app). Wildcards need origin patterns in CORS config.
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:5173,http://127.0.0.1:5173,https://*.trycloudflare.com,https://*.vercel.app,https://*.netlify.app,https://*.up.railway.app,*}
   jwt:
     secret: ${JWT_SECRET:8f3a91c7e2b54d8a6f1c9e7b3a5d2f8c0e4a6b9d1f7c3}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}

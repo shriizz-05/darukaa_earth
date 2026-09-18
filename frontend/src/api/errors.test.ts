@@ -51,6 +51,27 @@ describe("getApiErrorMessage", () => {
       "Unable to reach the API. Is the backend running?",
     );
   });
+
+  it("maps a CORS 403 to a CORS message instead of a permission error", () => {
+    const error = axiosError(403, "Invalid CORS request");
+    expect(getApiErrorMessage(error, "Unable to sign in.")).toBe(
+      "This website is blocked from calling the API (CORS). The backend must allow this origin.",
+    );
+  });
+
+  it("uses the login fallback for a 403 without a JSON body", () => {
+    const error = axiosError(403, {});
+    expect(getApiErrorMessage(error, "Unable to sign in.")).toBe("Unable to sign in.");
+  });
+
+  it("keeps a JSON access-denied message", () => {
+    const error = axiosError(403, {
+      message: "You do not have permission to perform this action",
+    });
+    expect(getApiErrorMessage(error, "Unable to sign in.")).toBe(
+      "You do not have permission to perform this action",
+    );
+  });
 });
 
 describe("getApiFieldErrors", () => {

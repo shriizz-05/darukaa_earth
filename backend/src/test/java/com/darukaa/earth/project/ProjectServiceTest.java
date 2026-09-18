@@ -98,7 +98,7 @@ class ProjectServiceTest {
                 new Project("Active plot", null, ProjectType.COASTAL, ProjectStatus.ACTIVE);
         project.setId(2L);
         when(projectRepository.findAll(any(Specification.class))).thenReturn(List.of(project));
-        when(projectRepository.countSitesByProjectId(2L)).thenReturn(0L);
+        when(projectRepository.countSitesGrouped()).thenReturn(List.of());
 
         List<ProjectResponse> results = projectService.list(ProjectStatus.ACTIVE, null, null);
 

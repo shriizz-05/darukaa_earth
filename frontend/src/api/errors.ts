@@ -63,8 +63,12 @@ export function getApiErrorMessage(error: unknown, fallback: string): string {
     if (status === 401) {
       return "Invalid email or password";
     }
+    const rawBody = typeof error.response?.data === "string" ? error.response.data.trim() : "";
+    if (status === 403 && /cors/i.test(rawBody || data?.error || "")) {
+      return "This website is blocked from calling the API (CORS). The backend must allow this origin.";
+    }
     if (status === 403) {
-      return "You do not have permission to perform this action";
+      return fallback || "You do not have permission to perform this action";
     }
     if (status === 404) {
       return "The requested resource was not found";

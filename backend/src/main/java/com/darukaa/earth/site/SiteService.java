@@ -77,7 +77,7 @@ public class SiteService {
     @Transactional(readOnly = true)
     public GeoJsonFeatureCollection listAllAsFeatureCollection() {
         List<GeoJsonFeature> features =
-                siteRepository.findAll().stream().map(siteMapper::toFeature).toList();
+                siteRepository.findAllWithProject().stream().map(siteMapper::toFeature).toList();
         return new GeoJsonFeatureCollection(features);
     }
 

@@ -71,6 +71,9 @@ services:
         VITE_MAPBOX_TOKEN: ${VITE_MAPBOX_TOKEN:-pk.eyJ1IjoibXV0aHVzaHJpNzg2IiwiYSI6ImNtdTZ1eGcwZTBnM2UzMXF4bW02eGY3cm4ifQ.i008sawBdvqC266psI_0NA}
     container_name: darukaa-earth-frontend
     restart: unless-stopped
+    environment:
+      PORT: "80"
+      API_UPSTREAM: backend:8080
     depends_on:
       - backend
     ports:
