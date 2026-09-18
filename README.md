@@ -2,8 +2,7 @@
 
 Environmental intelligence for restoration projects: sites, spatial context, and analytics in one place.
 
-This repository is a **hiring-track hackathon submission**. Phases 1–13 implement the product; this README and [`docs/architecture.md`](docs/architecture.md) are the Phase 14 documentation.
-
+This repository is a **hiring-track hackathon submission**.
 **Demo login (must be changed before any shared deploy):** `admin@darukaa.earth` / `ChangeMe_Admin_123!`
 
 ---
@@ -70,10 +69,21 @@ _Add PNG/WebP files under `docs/screenshots/` and link them here before a public
 | Suggested file | Caption |
 | --- | --- |
 | `docs/screenshots/login.png` | Sign-in at `/login` with the demo admin account |
-| `docs/screenshots/dashboard.png` | Dashboard counts and Average Performance card labeled **Demo data** |
-| `docs/screenshots/projects.png` | Project list and create form (`/projects`) |
-| `docs/screenshots/map-draw.png` | Mapbox Draw polygon on `/map` before save |
-| `docs/screenshots/analytics.png` | Chart.js monthly series on `/analytics` |
+| <img width="1918" height="915" alt="image" src="https://github.com/user-attachments/assets/06f5b5eb-2b40-4d2d-8dcf-e847272afe72" /> <img width="1913" height="907" alt="image" src="https://github.com/user-attachments/assets/4615464d-cf87-419b-9466-582603cb97c8" />
+
+ | Dashboard counts and Average Performance  |
+| 
+<img width="1909" height="890" alt="image" src="https://github.com/user-attachments/assets/8d4da8b2-ec28-48d7-9ee6-99a3da7c3fe4" /> <img width="1888" height="879" alt="image" src="https://github.com/user-attachments/assets/67dcacf0-0f90-452d-ae49-078c47de4bb3" /> <img width="1920" height="903" alt="image" src="https://github.com/user-attachments/assets/fcec6436-c9e7-4c3a-b905-9688dcc5c66b" />
+
+
+ | Project list and create form |
+| <img width="1900" height="913" alt="image" src="https://github.com/user-attachments/assets/4e909351-a824-46e0-b7e5-0854856846a4" /> <img width="1904" height="924" alt="image" src="https://github.com/user-attachments/assets/dd3b00f6-6cd7-4db9-b891-82aab0dd15d9" /> <img width="1920" height="925" alt="image" src="https://github.com/user-attachments/assets/fba5cfb9-dfa0-4803-b9ed-1a897cafaf94" />
+
+
+ | Mapbox with intensive precision |
+| <img width="1883" height="911" alt="image" src="https://github.com/user-attachments/assets/7f9514a5-388a-4165-8f29-8730d29ede60" /> <img width="1892" height="916" alt="image" src="https://github.com/user-attachments/assets/2b54e8e4-e251-46a9-aa02-ff40d3a2acc3" />
+
+ | Chart.js monthly series on Analytics|
 
 Without `VITE_MAPBOX_TOKEN`, `/map` shows the in-app “Mapbox token is not configured” empty state instead of a map.
 
