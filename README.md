@@ -79,7 +79,8 @@ _Add PNG/WebP files under `docs/screenshots/` and link them here before a public
 
 
  | Project list and create form |
-| <img width="1900" height="913" alt="image" src="https://github.com/user-attachments/assets/4e909351-a824-46e0-b7e5-0854856846a4" /> <img width="1904" height="924" alt="image" src="https://github.com/user-attachments/assets/dd3b00f6-6cd7-4db9-b891-82aab0dd15d9" /> <img width="1920" height="925" alt="image" src="https://github.com/user-attachments/assets/fba5cfb9-dfa0-4803-b9ed-1a897cafaf94" />
+| <img width="1900" height="913" alt="image" src="https://github.com/user-attachments/assets/4e909351-a824-46e0-b7e5-0854856846a4" /> <img width="1904" height="924" alt="image" src="https://github.com/user-attachments/assets/dd3b00f6-6cd7-4db9-b891-82aab0dd15d9" /> <img width="1920" height="925" alt="image" src="https://github.com/user-attachments/assets/fba5cfb9-dfa0-4803-b9ed-1a897cafaf94" /> <img width="1919" height="917" alt="image" src="https://github.com/user-attachments/assets/38d7a44c-d3a6-4fbe-bc99-15afde2ad253" />
+
 
 
  | Mapbox with intensive precision |
