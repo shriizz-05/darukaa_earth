@@ -1,0 +1,24 @@
+{
+  "name": "darukaa-earth",
+  "private": true,
+  "description": "Darukaa.Earth monorepo — run npm install here so Git hooks (Husky) are installed.",
+  "scripts": {
+    "prepare": "husky",
+    "lint": "npm --prefix frontend run lint",
+    "format": "npm --prefix frontend run format",
+    "format:check": "npm --prefix frontend run format:check"
+  },
+  "lint-staged": {
+    "frontend/**/*.{js,jsx,ts,tsx}": [
+      "node ./scripts/lint-staged-file.mjs eslint",
+      "node ./scripts/lint-staged-file.mjs prettier"
+    ],
+    "frontend/**/*.{css,json}": [
+      "node ./scripts/lint-staged-file.mjs prettier"
+    ]
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.2"
+  }
+}

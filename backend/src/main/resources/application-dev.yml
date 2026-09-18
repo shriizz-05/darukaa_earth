@@ -1,0 +1,9 @@
+# Optional: spring.profiles.active=dev
+# Requires MySQL (docker compose). Flyway runs on startup.
+
+app:
+  cors:
+    allowed-origins: http://localhost:5173
+  seed:
+    # Generated Indian ecological demo series for Chart.js. Not field measurements.
+    demo: ${APP_SEED_DEMO:true}

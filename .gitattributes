@@ -1,0 +1,2 @@
+# Git hooks must use LF or they fail on Windows (Git for Windows + PowerShell).
+.husky/* text eol=lf

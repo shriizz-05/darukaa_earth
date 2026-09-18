@@ -1,0 +1,8 @@
+app:
+  admin:
+    seed: false
+  seed:
+    demo: false
+  jwt:
+    secret: test-only-jwt-secret-please-do-not-use-in-prod
+    fail-on-weak-secret: false

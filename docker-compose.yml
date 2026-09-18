@@ -1,0 +1,80 @@
+# Full stack: MySQL 8 + Spring Boot + nginx SPA.
+# Spatial types are built in (not PostGIS). Flyway runs on backend startup.
+#
+# Full stack (browser → nginx:5173 → /api → backend → mysql):
+#   copy .env.example .env   # then set JWT_SECRET, APP_ADMIN_PASSWORD, VITE_MAPBOX_TOKEN
+#   docker compose up --build
+#
+# Local hybrid (MySQL only; keep mvnw / npm run dev):
+#   docker compose up -d mysql
+#
+# Defaults match README / .env.example. Override via a root .env file. Never commit .env.
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: darukaa-earth-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-darukaa_earth}
+      MYSQL_USER: ${MYSQL_USER:-darukaa}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-darukaa_dev}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-darukaa_root_dev}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - darukaa_mysql_data:/var/lib/mysql
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 25s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: darukaa-earth-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-darukaa_earth}
+      MYSQL_USER: ${MYSQL_USER:-darukaa}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-darukaa_dev}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-86400000}
+      JWT_FAIL_ON_WEAK_SECRET: ${JWT_FAIL_ON_WEAK_SECRET:-false}
+      APP_SEED_DEMO: ${APP_SEED_DEMO:-true}
+      APP_ADMIN_SEED: ${APP_ADMIN_SEED:-true}
+      APP_ADMIN_EMAIL: ${APP_ADMIN_EMAIL:-admin@darukaa.earth}
+      APP_ADMIN_PASSWORD: ${APP_ADMIN_PASSWORD:-ChangeMe_Admin_123!}
+      APP_ADMIN_NAME: ${APP_ADMIN_NAME:-Darukaa Admin}
+      APP_CORS_ALLOWED_ORIGINS: ${APP_CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost,http://localhost:80}
+      JAVA_OPTS: ${JAVA_OPTS:-}
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
+        VITE_MAPBOX_TOKEN: ${VITE_MAPBOX_TOKEN:-}
+    container_name: darukaa-earth-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-5173}:80"
+
+volumes:
+  darukaa_mysql_data:
